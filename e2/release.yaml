@@ -15,8 +15,8 @@ application:
 
   envs:
   # when modified this file will trigger docker pull-tag-push for the specified version for each environment
-    staging: 3.30.10
-    qa: 3.30.18
-    preprod: 3.30.18
-    prod: 1.0.1
+    staging: 3.29.540
+    qa: 3.29.540
+    preprod: 3.29.540
+    prod: 3.29.540
   
