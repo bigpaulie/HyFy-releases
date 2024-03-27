@@ -30,12 +30,12 @@ jobs:
             NEW_TAG="aixpand/exe_eng:$env"
             echo "Environment: $env <- Version: $version"
           done
+          
           echo "Processing step:"
           echo "$ENVS" | while IFS=: read -r env version; do
             version=${version//[[:space:]]/} 
             IMAGE="aixpand/exe_eng:$version"
             NEW_TAG="aixpand/exe_eng:$env"
-            IMAGE="aixpand/exe_eng:$VERSION"
             
             # Pull the specified version
             echo "Pulling $IMAGE..."
@@ -45,7 +45,6 @@ jobs:
             fi
 
             # Tag and push the image with the environment tag
-            NEW_TAG="aixpand/exe_eng:$ENV_TAG"
             echo "Tagging $IMAGE as $NEW_TAG..."
             docker tag $IMAGE $NEW_TAG
 
