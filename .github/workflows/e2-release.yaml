@@ -21,16 +21,20 @@ jobs:
       - name: Pull, tag, and push images
         run: |
           # Parse the release.yaml file to extract versions
-          ENVS=$(yq e '.application.envs' e2/release.yaml)
-          echo "Attempting to process the following releases"
-          for ENV in $ENVS; do
-            VERSION=$(echo $ENV | awk '{print $2}')
-            ENV_TAG=$(echo $ENV | awk '{print $1}')
-            echo "Environment: $ENV_TAG <- Version: $VERSION"
+          yq e '... comments=""' e2/release.yaml > temp.yaml
+          ENVS=$(yq e '.application.envs' temp.yaml)
+          echo "Recap step: attempting to process the following releases:"
+          echo "$ENVS" | while IFS=: read -r env version; do
+            version=${version//[[:space:]]/}  # Trim whitespace from version
+            IMAGE="aixpand/exe_eng:$version"
+            NEW_TAG="aixpand/exe_eng:$env"
+            echo "Environment: $env <- Version: $version"
           done
-          for ENV in $ENVS; do
-            VERSION=$(echo $ENV | awk '{print $2}')
-            ENV_TAG=$(echo $ENV | awk '{print $1}')
+          echo "Processing step:"
+          echo "$ENVS" | while IFS=: read -r env version; do
+            version=${version//[[:space:]]/} 
+            IMAGE="aixpand/exe_eng:$version"
+            NEW_TAG="aixpand/exe_eng:$env"
             IMAGE="aixpand/exe_eng:$VERSION"
             
             # Pull the specified version
