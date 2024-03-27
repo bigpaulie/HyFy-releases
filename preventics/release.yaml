@@ -9,9 +9,14 @@ application:
     prod: 1.0.1
 
   versions:
+    1.0.2:
+      backend:
+        image: aixpand/backend:release-1.92.3
+      frontend:
+        image: aixpand/investigator:banksight-0.52.1
     1.0.1:
       backend:
-        image: aixpand/backend:release-1.92.0    
+        image: aixpand/backend:release-1.92.0
       frontend:
         image: aixpand/investigator:banksight-0.51.1
 
