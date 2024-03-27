@@ -1,0 +1,24 @@
+application:
+  name: Optizone
+  type: k8s
+
+  envs:
+    staging: 1.0.1
+    qa: 1.0.1
+    preprod: 1.0.1
+    prod: 1.0.1
+
+  versions:
+    1.0.1:
+      summary: "This is the first release of Optizone"
+      backend:
+        image: aixpand/backend:release-1.92.0    
+      frontend:
+        image: aixpand/investigator:optizone-0.51.1
+
+    1.0.0:
+      summary: "This is the first release of Optizone"
+      backend:
+        image: aixpand/backend:release-1.91.0    
+      frontend:
+        image: aixpand/investigator:optizone-0.51.1

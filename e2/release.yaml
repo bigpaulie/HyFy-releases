@@ -1,0 +1,22 @@
+application:
+  name: Execution Engine
+  ## Types:
+  ## - "k8s" (Kubernetes) - for applications deployed on Kubernetes - no retagging but rather
+  ##                      update is done by changing the image tag
+  ## - "edge" - for applications deployed on edge devices - will retag the images with the edge tag
+  ##          and push them to the edge registry. Version information is taken from target repo
+  type: edge
+
+  # this is the repo where to get the version tags from 
+  git_repo: https://github.com/Lummetry/AiXp-EE.git
+
+  # this is the DockerHub repository where the images are stored
+  docker_repo: aixpand/exe_eng 
+
+  envs:
+  # when modified this file will trigger docker pull-tag-push for the specified version for each environment
+    staging: 1.0.1
+    qa: 1.0.1
+    preprod: 1.0.1
+    prod: 1.0.1
+  
