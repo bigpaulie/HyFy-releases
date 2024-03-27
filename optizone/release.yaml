@@ -14,6 +14,7 @@ application:
         image: aixpand/backend:release-1.92.3
       frontend:
         image: aixpand/investigator:optizone-0.52.1
+        
     1.0.1:
       summary: "This is the first release of Optizone"
       backend:
