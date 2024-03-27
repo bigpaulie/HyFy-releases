@@ -1,0 +1,54 @@
+name: Process Edge Device Releases
+
+on:
+  push:
+    paths:
+      - 'e2/**'
+
+jobs:
+  handle-edge-device-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Pull, tag, and push images
+        run: |
+          # Parse the release.yaml file to extract versions
+          ENVS=$(yq e '.application.envs' e2/release.yaml)
+          echo "Attempting to process the following releases"
+          for ENV in $ENVS; do
+            VERSION=$(echo $ENV | awk '{print $2}')
+            ENV_TAG=$(echo $ENV | awk '{print $1}')
+            echo "Environment: $ENV_TAG <- Version: $VERSION"
+          done
+          for ENV in $ENVS; do
+            VERSION=$(echo $ENV | awk '{print $2}')
+            ENV_TAG=$(echo $ENV | awk '{print $1}')
+            IMAGE="aixpand/exe_eng:$VERSION"
+            
+            # Pull the specified version
+            echo "Pulling $IMAGE..."
+            if ! docker pull $IMAGE; then
+              echo "Failed to pull image $IMAGE"
+              exit 1
+            fi
+
+            # Tag and push the image with the environment tag
+            NEW_TAG="aixpand/exe_eng:$ENV_TAG"
+            echo "Tagging $IMAGE as $NEW_TAG..."
+            docker tag $IMAGE $NEW_TAG
+
+            echo "Pushing $NEW_TAG..."
+            docker push $NEW_TAG
+          done
+        shell: bash
+
+      - name: Logout from Docker Hub
+        run: docker logout
