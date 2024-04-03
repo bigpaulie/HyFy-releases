@@ -3,7 +3,7 @@ application:
   type: k8s
 
   envs:
-    staging: 1.0.1
+    staging: 1.0.3
     qa: 1.0.1
     preprod: 1.0.1
     prod: 1.0.1
@@ -28,7 +28,7 @@ application:
         image: aixpand/backend:release-1.92.0
       frontend:
         image: aixpand/investigator:banksight-0.51.1
-        summary: ""
+      summary: ""
 
     1.0.0:
       backend:
