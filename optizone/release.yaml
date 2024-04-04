@@ -1,6 +1,6 @@
 application:
   envs:
-    staging: 1.0.4
+    staging: 1.0.5
     qa: 1.0.1
     preprod: 1.0.1
     prod: 1.0.1
@@ -12,35 +12,34 @@ application:
         image: aixpand/backend:release-1.91.0
       frontend:
         image: aixpand/investigator:optizone-0.51.1
-      summary: "This is the first release of Optizone"
+      summary: This is the first release of Optizone
     1.0.1:
       backend:
         image: aixpand/backend:release-1.92.0
       frontend:
         image: aixpand/investigator:optizone-0.51.1
-      summary: "This is the first release of Optizone"
+      summary: This is the first release of Optizone
     1.0.2:
       backend:
         image: aixpand/backend:release-1.92.3
       frontend:
         image: aixpand/investigator:optizone-0.52.1
-      summary: ""
+      summary: ''
     1.0.3:
       backend:
         image: aixpand/backend:release-1.92.6
       frontend:
         image: aixpand/investigator:optizone-0.52.10
-      summary: "Current state at 03/04/2024 11:18"
+      summary: Current state at 03/04/2024 11:18
     1.0.4:
       backend:
         image: aixpand/backend:release-1.92.7
       frontend:
         image: aixpand/investigator:optizone-0.52.10
-      summary: "Current state at 03/04/2024 16:46"
-
+      summary: Current state at 03/04/2024 16:46
     1.0.5:
       backend:
         image: aixpand/backend:release-1.92.7
       frontend:
         image: aixpand/investigator:optizone-0.52.12
-      summary: "Current state at 04/04/2024 09:29"
+      summary: Current state at 04/04/2024 09:29
