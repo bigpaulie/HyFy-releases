@@ -18,8 +18,11 @@ Each application or component within our ecosystem has its dedicated directory c
 │   └── release.yaml
 ├── optizone
 │   └── release.yaml
-└── preventics
-    └── release.yaml
+├── preventics
+│   └── release.yaml
+└── deploy-app
+    └── 
+
 ```
 
 ### `e2/release.yaml` for Edge Devices
