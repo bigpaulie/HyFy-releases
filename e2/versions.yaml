@@ -1,8 +1,11 @@
 application:
   name: Execution Engine
   versions:
+    3.30.110:
+      summary: Added extension support.
+  
     3.30.100:
-      summary: Current "main" deploy at 2024-04-08
+      summary: Updated LPR plugins (bug-fixes and car history)
 
     3.30.70:
       summary: Current "main" deploy at 2024-04-08
