@@ -128,6 +128,7 @@ const Dashboard = () => {
 
     const k8sRows = (versions: { [key: string]: any }) => {
         let rows = [];
+        console.log('k8sRows() before loop', versions);
         for (let version in versions) {
             rows.push({
                 version: version,
@@ -136,6 +137,7 @@ const Dashboard = () => {
                 summary: versions[version].summary,
             });
         }
+        console.log('k8sRows() after loop', rows);
         return rows;
     };
 
