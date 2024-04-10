@@ -6,7 +6,7 @@ export class GitService extends BaseService {
     }
 
     public async getVersions(dir: string): Promise<any> {
-        return await this.get<any>(`/git/config/${dir}`);
+        return await this.get<any>(`/git/config/${dir}/versions`);
     }
 
     public async deployVersion(tagData: object): Promise<any> {

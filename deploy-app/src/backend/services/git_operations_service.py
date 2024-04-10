@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from backend.models import TagData
 from backend.services.git_service import GitService  # Adjust the import path as necessary
-from backend.constants import RELEASE_FILE_NAME
+from backend.constants import RELEASE_FILE_NAME, VERSIONS_FILE_NAME
 
 def represent_ordereddict(dumper, data):
     return dumper.represent_dict(data.items())
@@ -99,6 +99,30 @@ class GitOperationsService:
         """
         # Construct the path to the release.yaml file within the specified directory
         release_file_path = os.path.join(self.local_repo_path, directory_name, RELEASE_FILE_NAME)
+
+        try:
+            if os.path.exists(release_file_path):
+                with open(release_file_path, 'r') as file:
+                    return yaml.safe_load(file)
+            else:
+                raise FileNotFoundError(f"The file {release_file_path} does not exist.")
+        except FileNotFoundError as e:
+            print(f"Error: {e}")
+        except yaml.YAMLError as e:
+            print(f"Error parsing YAML file: {e}")
+
+        # Return an empty dictionary if the file does not exist or an error occurs
+        return {}
+    
+    def get_versions_file_contents(self, directory_name: str) -> dict:
+        """
+        Retrieves the contents of the versions.yaml file from the specified directory.
+
+        :param directory_name: The name of the directory to search for the versions.yaml file.
+        :return: The contents of the versions.yaml file as a dictionary.
+        """
+        # Construct the path to the versions.yaml file within the specified directory
+        release_file_path = os.path.join(self.local_repo_path, directory_name, VERSIONS_FILE_NAME)
 
         try:
             if os.path.exists(release_file_path):

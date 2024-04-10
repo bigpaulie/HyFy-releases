@@ -33,3 +33,8 @@ def refresh_config(current_user: User = Depends(get_current_user)):
 def get_config_from_directory(directory: str, current_user: User = Depends(get_current_user)):
     git_operations_service = GitOperationsService(GITHUB_REPOSITORY_NAME)
     return git_operations_service.get_release_file_contents(directory)
+
+@router.get('/config/{directory}/versions')
+def get_config_from_directory(directory: str, current_user: User = Depends(get_current_user)):
+    git_operations_service = GitOperationsService(GITHUB_REPOSITORY_NAME)
+    return git_operations_service.get_versions_file_contents(directory)
