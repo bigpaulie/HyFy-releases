@@ -1,14 +1,9 @@
 application:
-  name: Execution Engine
-  git_repo: https://github.com/Lummetry/AiXp-EE.git
-  docker_repo: aixpand/exe_eng 
-
+  docker_repo: aixpand/exe_eng
   envs:
-  # when modified this file will trigger docker pull-tag-push for the specified version for each environment
-  # carefull to respect staging >= qa >= preprod >= prod
-    staging: 3.30.100
+    staging: 3.30.110
     qa: 3.30.100
     preprod: 3.30.100
     prod: 3.30.100
-
-  
+  git_repo: https://github.com/Lummetry/AiXp-EE.git
+  name: Execution Engine
