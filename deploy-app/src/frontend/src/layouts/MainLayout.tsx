@@ -13,6 +13,7 @@ import ListMenu from "../components/ListMenu";
 import GlobalContext from "../contexts/GlobalContext";
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from "@mui/material";
+import { APP_NAME } from "../Constants";
 
 
 interface MainLayoutProps {
@@ -81,7 +82,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Deploy APP
+            {APP_NAME}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Button color="inherit" onClick={handleLogout}>Logout</Button>
