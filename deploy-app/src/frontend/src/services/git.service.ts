@@ -9,6 +9,10 @@ export class GitService extends BaseService {
         return await this.get<any>(`/git/config/${dir}`);
     }
 
+    public async refreshConfig(): Promise<any> {
+        return await this.get<any>(`/git/refresh-config`);
+    }
+
     public async getVersions(dir: string): Promise<any> {
         return await this.get<any>(`/git/config/${dir}/versions`);
     }

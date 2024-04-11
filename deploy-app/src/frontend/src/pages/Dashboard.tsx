@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { Container, Typography, Tabs, Tab, Box, Paper, Chip, CircularProgress } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, Paper, Chip, CircularProgress, Button } from '@mui/material';
 import MainLayout from '../layouts/MainLayout';
 import { GitService } from '../services/git.service';
 import BasicTableWithActions from '../components/BasicTableWithActions';
 import DeployButton from '../components/DeployButton';
 import GlobalContext from '../contexts/GlobalContext';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 interface TagDataDTO {
     tag: string;
@@ -136,6 +137,24 @@ const Dashboard = () => {
         }
     };
 
+    const refreshDataForTab = async () => {
+        setLoading(true);
+        try {
+            const configData = await gitService.refreshConfig();
+            setDashboardState(prevState => ({
+                ...prevState,
+                config: configData,
+            }));
+        } catch (error: Error|any) {
+            let message = `Error: ${error.response?.data?.detail || error.message}`;
+            if (addSnackBar) {
+                addSnackBar({ message, type: 'error', duration: 10000 });
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         gitService.getConfigs().then(data => {
             setDashboardState(prevState => ({
@@ -211,9 +230,12 @@ const Dashboard = () => {
     return (
         <MainLayout>
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Tagger
-                </Typography>
+                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="h4" component="h1" gutterBottom>
+                        Tagger
+                    </Typography>
+                    <Button variant="contained" onClick={() => refreshDataForTab()}><RefreshIcon /> Refresh</Button>
+                </Box>
                 <Tabs value={selectedTab} onChange={handleTabChange} aria-label="dashboard tabs">
                     {dashboardState.config.map((item, index) => (
                         <Tab key={index} label={item.application_name} />
