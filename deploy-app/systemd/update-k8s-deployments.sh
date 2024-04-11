@@ -2,7 +2,7 @@
 
 # Configuration
 config_file="./config.yaml"
-iteration_interval=3600  # Interval in seconds between each iteration
+iteration_interval=60  # Interval in seconds between each iteration
 
 # Clone or pull repository to the specified path
 clone_or_pull_repo() {
@@ -64,6 +64,7 @@ update_deployment() {
 
     local clone_path="${PWD}/updates/"
     local release_file="${clone_path}/${directory_name}/release.yaml"
+    local version_file="${clone_path}/${directory_name}/versions.yaml"
 
     # Clone or pull the repository
     clone_or_pull_repo "$repository" "$clone_path"
@@ -83,9 +84,9 @@ update_deployment() {
     fi
 
     if [ "$current_version" != "$previous_version" ]; then
-        local backend_image=$(yq eval ".application.versions[\"${current_version}\"].backend.image" "$release_file")
-        local frontend_image=$(yq eval ".application.versions[\"${current_version}\"].frontend.image" "$release_file")
-        local release_summary=$(yq eval ".application.versions[\"${current_version}\"].summary" "$release_file")
+        local backend_image=$(yq eval ".application.versions[\"${current_version}\"].backend.image" "$version_file")
+        local frontend_image=$(yq eval ".application.versions[\"${current_version}\"].frontend.image" "$version_file")
+        local release_summary=$(yq eval ".application.versions[\"${current_version}\"].summary" "$version_file")
 
         if [[ "$backend_image" == "null" ]] || [[ "$frontend_image" == "null" ]]; then
             echo "Error: Could not find backend or frontend image in the release file."

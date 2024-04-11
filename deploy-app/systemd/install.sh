@@ -29,6 +29,7 @@ if [ ! -f "$current_dir/$service_template" ]; then
 fi
 
 # Replace the placeholder in the service file template with the actual path
+sed "s|/path/to/repo|$current_dir|g" "$current_dir/$service_template" > "$service_file"
 sed "s|/path/to|$current_dir|g" "$current_dir/$service_template" > "$service_file"
 
 # Ensure the script and config file are present and executable
