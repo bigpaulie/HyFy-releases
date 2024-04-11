@@ -6,7 +6,7 @@ current_dir=$(pwd)
 # The name of your service, script, and the relative path to the root of the git repository
 service_name="update-k8s-deployments"
 script_name="update-k8s-deployments.sh"
-config_file="config.yml"
+config_file="config.yaml"
 service_template="${service_name}.service.template"
 service_file="/etc/systemd/system/${service_name}.service"
 
