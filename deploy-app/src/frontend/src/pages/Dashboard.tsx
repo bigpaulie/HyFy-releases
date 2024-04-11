@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Container, Typography, Tabs, Tab, Box } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, Paper, Chip, CircularProgress } from '@mui/material';
 import MainLayout from '../layouts/MainLayout';
 import { GitService } from '../services/git.service';
 import BasicTableWithActions from '../components/BasicTableWithActions';
@@ -17,153 +17,195 @@ interface K8STableRow {
     backend_image: string;
     frontend_image: string;
     summary: string;
+    assigned_to: string;
 }
 
-interface GetConfigDto {
+interface E2TableRow {
+    version: string;
+    summary: string;
+    assigned_to: string;
+}
+
+interface GetConfigsDto {
     directory_name: string;
     application_name: string;
     application_type: string;
 }
 
+interface ConfigApplicationVersionDetailDto {
+    image: string;
+}
+
+interface ConfigApplicationVersionDto {
+    backend: ConfigApplicationVersionDetailDto;
+    frontend: ConfigApplicationVersionDetailDto;
+    summary: string;
+}
+
+interface ConfigApplicationVersionsDto {
+    [key: string]: ConfigApplicationVersionDto;
+}
+
+interface ConfigApplicationEnvsDto {
+    [key: string]: string;
+}
+
+interface ConfigApplicationDto {
+    name: string;
+    type: string;
+    envs: ConfigApplicationEnvsDto;
+    versions: ConfigApplicationVersionsDto;
+}
+
 const gitService = new GitService();
+
+const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnvsDto) => {
+    const { versions, type } = appData;
+
+    if (type === 'k8s') {
+        return Object.keys(versions).map(version => ({
+            version,
+            backend_image: versions[version].backend?.image || 'N/A',
+            frontend_image: versions[version].frontend?.image || 'N/A',
+            summary: versions[version].summary || 'No summary available',
+            assigned_to: environmentsForVersions(version, envs) || 'N/A',
+        }));
+    } else {
+        return Object.keys(versions).map(version => ({
+            version,
+            summary: versions[version].summary || 'No summary available',
+            assigned_to: environmentsForVersions(version, envs) || 'N/A',
+        }));
+    }
+};
+
+const environmentsForVersions = (version: string, envs: ConfigApplicationEnvsDto): string => {
+    return Object.entries(envs)
+        .filter(([_env, ver]) => ver === version)
+        .map(([env]) => env)
+        .join(', ');
+};
 
 const Dashboard = () => {
     const [selectedTab, setSelectedTab] = useState(0);
-    const [config, setConfig] = useState<GetConfigDto[]>([]);
-    const [currentConfig, setCurrentConfig] = useState<object>({});
-    const [tableColumns, setTableColumns] = useState<{ label: string; field: string; }[]>([]);
-    const [_tableRows, setTableRows] = useState<{ [key: string]: any }>([]);
+    const [loading, setLoading] = useState(false);
+    const [dashboardState, setDashboardState] = useState<{
+        config: GetConfigsDto[],
+        selectedEnv: ConfigApplicationEnvsDto,
+        tableRows: (K8STableRow[] | E2TableRow[])
+    }>({
+        config: [],
+        selectedEnv: {},
+        tableRows: []
+    });
 
     const { addSnackBar } = useContext(GlobalContext);
 
-    useEffect(() => {
-        gitService.getConfig().then((data: GetConfigDto[]) => {
-            setConfig(data);
-            gitService.getVersions(data[0].directory_name).then((app: object) => {
-                // @ts-ignore
-                const versions = app.application.versions;
-                setCurrentConfig(versions);
-                setSelectedTab(0);
-                const currentConfig = data[0];
-                if (currentConfig.application_type === 'k8s') {
-                    setTableColumns([
-                        {label: 'Version', field: 'version'}, 
-                        {label: 'Backend Image', field: 'backend_image'}, 
-                        {label: 'Frontend Image', field: 'frontend_image'},
-                        {label: 'Summary', field: 'summary'},
-                    ]);
-                    setTableRows(k8sRows(versions));
-                }
+    const k8sTableColumns = [
+        {label: 'Version', field: 'version'}, 
+        {label: 'Summary', field: 'summary'},
+        {label: 'Backend Image', field: 'backend_image'}, 
+        {label: 'Frontend Image', field: 'frontend_image'},
+        {label: 'Assigned To', field: 'assigned_to'},
+    ];
 
-                if (currentConfig.application_type == 'edge') {
-                    setTableColumns([
-                        {label: 'Version', field: 'version'}, 
-                        {label: 'Summary', field: 'summary'},
-                    ]);
-                    setTableRows(e2Rows(versions));
-                }
-            });
+    const e2TableColumns = [
+        {label: 'Version', field: 'version'}, 
+        {label: 'Summary', field: 'summary'},
+        {label: 'Assigned To', field: 'assigned_to'},
+    ];
+
+    // new state management functions
+    const loadDataForTab = async (directoryName: string) => {
+        setLoading(true);
+        try {
+            const configData = await gitService.getConfig(directoryName);
+            const versionData = await gitService.getVersions(directoryName);
+            setDashboardState(prevState => ({
+                ...prevState,
+                selectedEnv: configData.application.envs,
+                tableRows: getRowsForApp(versionData.application, configData.application.envs)
+            }));
+        } catch (error: Error|any) {
+            let message = `Error: ${error.response?.data?.detail || error.message}`;
+            if (addSnackBar) {
+                addSnackBar({ message, type: 'error', duration: 10000 });
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        gitService.getConfigs().then(data => {
+            setDashboardState(prevState => ({
+                ...prevState,
+                config: data
+            }));
+
+            if (data.length > 0) {
+                loadDataForTab(data[0].directory_name);
+            }
         });
     }, []);
 
+
     useEffect(() => {
-        if (config.length > 0) {
-            const gitService = new GitService();
-            gitService.getVersions(config[selectedTab].directory_name).then((app: object) => {
-                // @ts-ignore
-                const versions = app.application.versions;
-                setCurrentConfig(versions);
-                if (config[selectedTab].application_type === 'k8s') {
-                    setTableColumns([
-                        {label: 'Version', field: 'version'}, 
-                        {label: 'Backend Image', field: 'backend_image'}, 
-                        {label: 'Frontend Image', field: 'frontend_image'},
-                        {label: 'Summary', field: 'summary'},
-                    ]);
-                    setTableRows(k8sRows(versions));
-                }
-
-                if (config[selectedTab].application_type == 'edge') {
-                    setTableColumns([
-                        {label: 'Version', field: 'version'}, 
-                        {label: 'Summary', field: 'summary'},
-                    ]);
-                    setTableRows(e2Rows(versions));
-                }
-            });
+        if (dashboardState.config.length > 0) {
+            const directoryName = dashboardState.config[selectedTab].directory_name;
+            loadDataForTab(directoryName);
         }
-    }, [selectedTab]);
+    }, [selectedTab, dashboardState.config]);
 
-    const handleTabChange = (_event: object, newValue: number) => {
+    const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
         setSelectedTab(newValue);
+        // If needed, trigger data loading for the newly selected tab
+        if (dashboardState.config.length > newValue) {
+            loadDataForTab(dashboardState.config[newValue].directory_name);
+        }
     };
 
     const k8sActionsColumn = (row: K8STableRow) => {
-
         const handleOnSelection = (env: string) => {
+            // Access the directory name from the unified state object
+            const directory = dashboardState.config[selectedTab]?.directory_name;
+    
             const tagData = {
                 tag: row.version,
-                directory: config[selectedTab].directory_name,
+                directory: directory,
                 environment: env,
             } as TagDataDTO;
-
+    
             gitService.deployVersion(tagData).then(() => {
                 let message = `Deployed ${row.version} to ${env}`;
                 if (addSnackBar) {
                     addSnackBar({ message, type: 'success', duration: 5000 });
                 }
+
+                // update the state by calling the loadDataForTab function
+                loadDataForTab(directory);
             }).catch((error) => {
-                let message = `${error.response.data.detail || error.message}`;
+                let message = `Error: ${error.response?.data?.detail || error.message}`;
                 if (addSnackBar) {
                     addSnackBar({ message, type: 'error', duration: 10000 });
                 }
             });
         };
-        return (
-            <>
-                <DeployButton onSelection={handleOnSelection} />
-            </>
-        );
-    };
-
-    const k8sRows = (versions: { [key: string]: any }) => {
-        let rows = [];
-        console.log('k8sRows() before loop', versions);
-        for (let version in versions) {
-            rows.push({
-                version: version,
-                backend_image: versions[version]?.backend?.image,
-                frontend_image: versions[version]?.frontend?.image,
-                summary: versions[version].summary,
-            });
-        }
-        console.log('k8sRows() after loop', rows);
-        return rows;
-    };
-
-    const e2Rows = (versions: { [key: string]: any }) => {
-        let rows = [];
-        for (let version in versions) {
-            rows.push({
-                version: version,
-                summary: versions[version].summary,
-            });
-        }
-        return rows;
+    
+        return <DeployButton onSelection={handleOnSelection} />;
     };
 
     const renderTabContent = (tabIndex: number) => {
-        switch (tabIndex) {
-            case 0:
-                return <BasicTableWithActions keyColumn='version' columns={tableColumns} rows={e2Rows(currentConfig)} actionColumn={k8sActionsColumn} />;
-            case 1:
-                return <BasicTableWithActions keyColumn='version' columns={tableColumns} rows={k8sRows(currentConfig)} actionColumn={k8sActionsColumn} />;
-            case 2:
-                
-                return <BasicTableWithActions keyColumn='version' columns={tableColumns} rows={k8sRows(currentConfig)} actionColumn={k8sActionsColumn} />;
-            default:
-                return <Typography>Content for unknown Tab</Typography>;
+        // Make sure to access the current state from `dashboardState`
+        const currentConfig = dashboardState.config[tabIndex];
+        if (!currentConfig) {
+            return <Typography>Loading...</Typography>; // Or some other placeholder content
         }
+    
+        const rows = dashboardState.tableRows;
+        const columns = currentConfig.application_type === 'k8s' ? k8sTableColumns : e2TableColumns;
+    
+        return <BasicTableWithActions keyColumn='version' columns={columns} rows={rows} actionColumn={k8sActionsColumn} />;
     };
 
     return (
@@ -173,12 +215,39 @@ const Dashboard = () => {
                     Tagger
                 </Typography>
                 <Tabs value={selectedTab} onChange={handleTabChange} aria-label="dashboard tabs">
-                    {config.map((item, index) => (
+                    {dashboardState.config.map((item, index) => (
                         <Tab key={index} label={item.application_name} />
                     ))}
                 </Tabs>
                 <Box sx={{ mt: 2 }}>
-                    {renderTabContent(selectedTab)}
+                    {/* <Paper sx={{ p: 2, mb: 3 }}>
+                        <Typography variant="h6" component="h2" gutterBottom>
+                            Environment Versions
+                        </Typography>
+                        {Object.keys(dashboardState.selectedEnv).map((env, index) => (
+                            <Chip key={index} label={`${env} : ${dashboardState.selectedEnv[env]}`} sx={{ m: 1 }} />
+                        ))}
+                    </Paper>
+                    {renderTabContent(selectedTab)} */}
+
+                    {/* Loading indicator */}
+                    {loading ? (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <>
+                                <Paper sx={{ p: 2, mb: 3 }}>
+                                    <Typography variant="h6" component="h2" gutterBottom>
+                                        Environment Versions
+                                    </Typography>
+                                    {Object.keys(dashboardState.selectedEnv).map((env, index) => (
+                                        <Chip key={index} label={`${env} : ${dashboardState.selectedEnv[env]}`} sx={{ m: 1 }} />
+                                    ))}
+                                </Paper>
+                                {renderTabContent(selectedTab)}
+                            </>
+                        )}
                 </Box>
             </Container>
         </MainLayout>

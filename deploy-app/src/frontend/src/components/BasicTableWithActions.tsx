@@ -8,25 +8,42 @@ interface BasicTableWithActionsProps {
 };
 
 const BasicTableWithActions = ({ columns, rows, keyColumn, actionColumn }: BasicTableWithActionsProps) => {
+    const getNestedValue = (row: any, field: string) => {
+        // Split the field by dot notation to access nested properties
+        const keys = field.split('.');
+        let value = row;
+        for (let key of keys) {
+            if (value[key]) {
+                value = value[key];
+            } else {
+                return null; // or a default value if necessary
+            }
+        }
+        return value;
+    };
 
     return (
         <TableContainer component={Paper}>
             <Table>
                 <TableHead>
-                    {columns.map((column) => (
-                        <TableCell key={column.label}>{column.label}</TableCell>
-                    ))}
-                    <TableCell>Actions</TableCell>
+                    <TableRow>
+                        {columns.map((column) => (
+                            <TableCell key={column.label}>{column.label}</TableCell>
+                        ))}
+                        {actionColumn && <TableCell>Actions</TableCell>}
+                    </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row: any) => (
+                    {rows.map((row) => (
                         <TableRow key={row[keyColumn]}>
                             {columns.map((column) => (
-                                <TableCell key={column.field}>{row[column.field]}</TableCell>
+                                <TableCell key={column.field}>{getNestedValue(row, column.field)}</TableCell>
                             ))}
-                            <TableCell>
-                                {actionColumn ? actionColumn(row): ''}
-                            </TableCell>
+                            {actionColumn && (
+                                <TableCell>
+                                    {actionColumn(row)}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

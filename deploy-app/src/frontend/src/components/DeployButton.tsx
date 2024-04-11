@@ -45,7 +45,7 @@ export default function DeployButton({ onSelection }: DeployButtonProps) {
       >
         <MenuItem onClick={() => elementSelected('staging')}>Staging</MenuItem>
         <MenuItem onClick={() => elementSelected('qa')}>QA</MenuItem>
-        <MenuItem onClick={() => elementSelected('pre')}>Pre Prod</MenuItem>
+        <MenuItem onClick={() => elementSelected('preprod')}>Pre Prod</MenuItem>
         <MenuItem onClick={() => elementSelected('prod')}>Prod</MenuItem>
       </Menu>
     </div>

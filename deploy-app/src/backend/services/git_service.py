@@ -1,9 +1,15 @@
 import os
+import logging
 import subprocess
 from backend.constants import (
   GITHUB_USER, GITHUB_API_TOKEN, STORAGE_DIR, 
   GIT_COMMITER_NAME, GIT_COMMITER_EMAIL
 )
+
+from backend.exceptions.git_operation_exception import GitOperationException
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class GitService:
   """
@@ -69,11 +75,12 @@ class GitService:
     """
     clone_path = clone_path or self._get_default_repo_path()
     self._ensure_storage_dir(clone_path)
-    result = subprocess.run(['git', 'clone', self.repo_url, clone_path], check=True)
-    if result.returncode == 0:
-      self._set_commiter_identity(clone_path)
-    else:
-      print(f"Error cloning repository: {result.stderr}")
+    try:
+        subprocess.run(['git', 'clone', self.repo_url, clone_path], check=True, capture_output=True)
+        self._set_commiter_identity(clone_path)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error cloning repository: {e.stderr.decode()}")
+        raise GitOperationException('clone', e.stderr.decode(), e)
 
   def git_pull(self, repo_path=None):
     """
@@ -82,10 +89,11 @@ class GitService:
     :param repo_path: The path of the local repository to pull changes into.
     """
     repo_path = repo_path or self._get_default_repo_path()
-    self._ensure_storage_dir(repo_path)
-    result = subprocess.run(['git', 'pull'], cwd=repo_path, capture_output=True)
-    if result.returncode != 0:
-      print(f"Error pulling repository: {result.stderr}")
+    try:
+        result = subprocess.run(['git', 'pull'], cwd=repo_path, capture_output=True, check=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error pulling repository: {e.stderr.decode()}")
+        raise GitOperationException('pull', e.stderr.decode(), e)
 
   def git_commit(self, message, repo_path=None):
     """
@@ -95,10 +103,12 @@ class GitService:
     :param repo_path: The path of the local repository where the commit will be made.
     """
     repo_path = repo_path or self._get_default_repo_path()
-    subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
-    result = subprocess.run(['git', 'commit', '-m', message], cwd=repo_path, capture_output=True)
-    if result.returncode != 0:
-      print(f"Error committing changes: {result.stderr}")
+    try:
+        subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
+        subprocess.run(['git', 'commit', '-m', message], cwd=repo_path, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error committing changes: {e.stderr.decode()}")
+        raise GitOperationException('commit', e.stderr.decode(), e)
 
   def git_push(self, repo_path=None):
     """
@@ -107,6 +117,8 @@ class GitService:
     :param repo_path: The path of the local repository from which changes will be pushed.
     """
     repo_path = repo_path or self._get_default_repo_path()
-    result = subprocess.run(['git', 'push'], cwd=repo_path, capture_output=True)
-    if result.returncode != 0:
-      print(f"Error pushing changes: {result.stderr}")
+    try:
+        subprocess.run(['git', 'push'], cwd=repo_path, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error pushing changes: {e.stderr.decode()}")
+        raise GitOperationException('push', e.stderr.decode(), e)

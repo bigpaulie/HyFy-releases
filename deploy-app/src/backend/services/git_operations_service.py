@@ -1,16 +1,20 @@
 import yaml
 import os
+import logging
 from distutils.version import StrictVersion
 from collections import OrderedDict
 
 from backend.models import TagData
 from backend.services.git_service import GitService  # Adjust the import path as necessary
 from backend.constants import RELEASE_FILE_NAME, VERSIONS_FILE_NAME
+from backend.exceptions.git_operation_exception import GitOperationException
 
 def represent_ordereddict(dumper, data):
     return dumper.represent_dict(data.items())
 
 yaml.add_representer(OrderedDict, represent_ordereddict)
+
+logger = logging.getLogger(__name__)
 
 class GitOperationsService:
     def __init__(self, repo_name, local_repo_path=None, config_file_path=None):
@@ -22,41 +26,56 @@ class GitOperationsService:
         self.config_file_path = config_file_path
 
     def update_and_push_changes(self, tag_data: TagData, user=None):
-        self.prepare_repository()
-        if not self.check_tag_precedence(tag_data):
-            raise ValueError(f"The provided tag does not respect the precedence rule.")
-        self.update_configuration_file(tag_data)
-        commiting_user = user['name']
-        commit_message = f'chore: configuration updated by {commiting_user} for {tag_data.directory} {tag_data.environment} environment'
-        self.git_service.git_commit(repo_path=self.local_repo_path, message=commit_message)
-        self.git_service.git_push(self.local_repo_path)
+        try:
+            self.prepare_repository()
+            if not self.check_tag_precedence(tag_data):
+                raise ValueError(f"The provided tag does not respect the precedence rule.")
+            self.update_configuration_file(tag_data)
+            commiting_user = user['name']
+            commit_message = f'chore: configuration updated by {commiting_user} for {tag_data.directory} {tag_data.environment} environment'
+            self.git_service.git_commit(repo_path=self.local_repo_path, message=commit_message)
+            self.git_service.git_push(self.local_repo_path)
+        except GitOperationException as e:
+            logger.error(f"Git operation failed: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to update and push changes: {e}")
+            raise
 
     def prepare_repository(self):
-        if not os.path.exists(self.local_repo_path):
-            self.git_service.git_clone(self.local_repo_path)
-        self.git_service.git_pull(self.local_repo_path)
+        try:
+            if not os.path.exists(self.local_repo_path):
+                self.git_service.git_clone(self.local_repo_path)
+            self.git_service.git_pull(self.local_repo_path)
+        except GitOperationException as e:
+            logger.error(f"Git operation failed during repository preparation: {e}")
+            raise
 
     def update_configuration_file(self, tag_data):
         config_file = os.path.join(self.local_repo_path, self.config_file_path)
 
-        with open(config_file, 'r') as file:
-            config = yaml.load(file, Loader=yaml.FullLoader)
+        try:
+            with open(config_file, 'r') as file:
+                config = yaml.load(file, Loader=yaml.FullLoader)
 
-        env_order = ['staging', 'qa', 'preprod', 'prod']
+                env_order = ['staging', 'qa', 'preprod', 'prod']
 
-        # Create an OrderedDict to preserve the order
-        ordered_envs = OrderedDict()
-        for env in env_order:
-            ordered_envs[env] = config['application']['envs'].get(env, '')
+                # Create an OrderedDict to preserve the order
+                ordered_envs = OrderedDict()
+                for env in env_order:
+                    ordered_envs[env] = config['application']['envs'].get(env, '')
 
-        # Update the specific environment value
-        ordered_envs[tag_data.environment] = tag_data.tag
+                # Update the specific environment value
+                ordered_envs[tag_data.environment] = tag_data.tag
 
-        # Update the config dictionary with the ordered environments
-        config['application']['envs'] = ordered_envs
+                # Update the config dictionary with the ordered environments
+                config['application']['envs'] = ordered_envs
 
-        with open(config_file, 'w') as file:
-            yaml.dump(config, file, Dumper=yaml.Dumper)
+                with open(config_file, 'w') as file:
+                    yaml.dump(config, file, Dumper=yaml.Dumper)
+        except Exception as e:
+            logger.error(f"Failed to update configuration file {config_file}: {e}")
+            raise
 
     def check_tag_precedence(self, tag_data):
         config_file = os.path.join(self.local_repo_path, self.config_file_path)
