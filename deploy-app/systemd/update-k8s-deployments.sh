@@ -112,21 +112,20 @@ update_deployment() {
 }
 
 # Loop through deployments defined in the configuration file
-while true; do
-    num_deployments=$(yq eval '.deployments | length' "$config_file")
+num_deployments=$(yq eval '.deployments | length' "$config_file")
 
-    for ((i = 0; i < num_deployments; i++)); do
-        environment=$(yq eval ".deployments[$i].environment" "$config_file")
-        repository=$(yq eval ".repository" "$config_file")
-        directory_name=$(yq eval ".deployments[$i].directory_name" "$config_file")
-        backend_deployment_name=$(yq eval ".deployments[$i].backend_deployment_name" "$config_file")
-        frontend_deployment_name=$(yq eval ".deployments[$i].frontend_deployment_name" "$config_file")
-        namespace=$(yq eval ".deployments[$i].namespace" "$config_file")
+for ((i = 0; i < num_deployments; i++)); do
+    environment=$(yq eval ".deployments[$i].environment" "$config_file")
+    repository=$(yq eval ".repository" "$config_file")
+    directory_name=$(yq eval ".deployments[$i].directory_name" "$config_file")
+    backend_deployment_name=$(yq eval ".deployments[$i].backend_deployment_name" "$config_file")
+    frontend_deployment_name=$(yq eval ".deployments[$i].frontend_deployment_name" "$config_file")
+    namespace=$(yq eval ".deployments[$i].namespace" "$config_file")
 
-        update_deployment "$environment" "$repository" "$directory_name" \
-                          "$backend_deployment_name" "$frontend_deployment_name" "$namespace"
-    done
-
-    echo "Waiting for the next iteration..."
-    sleep $iteration_interval
+    update_deployment "$environment" "$repository" "$directory_name" \
+                        "$backend_deployment_name" "$frontend_deployment_name" "$namespace"
 done
+
+echo "Waiting for the next iteration..."
+sleep $iteration_interval
+exit 0

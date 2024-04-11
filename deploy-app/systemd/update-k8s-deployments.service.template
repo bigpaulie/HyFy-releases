@@ -5,6 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=itadmin
+# Ensure the git repository is up to date before starting the main script
+ExecStartPre=/usr/bin/git -C /path/to/repo pull
 ExecStart=/path/to/update-k8s-deployments.sh
 WorkingDirectory=/path/to
 

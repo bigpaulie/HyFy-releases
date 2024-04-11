@@ -3,12 +3,24 @@
 # Get the current working directory
 current_dir=$(pwd)
 
-# The name of your service and script
+# The name of your service, script, and the relative path to the root of the git repository
 service_name="update-k8s-deployments"
 script_name="update-k8s-deployments.sh"
 config_file="config.yml"
 service_template="${service_name}.service.template"
 service_file="/etc/systemd/system/${service_name}.service"
+
+# Calculate the path to the root of the git repository (two levels up from the current directory)
+repo_dir="$(dirname "$(dirname "$current_dir")")"
+
+# Check if the git repository directory exists and pull the latest changes
+if [ -d "$repo_dir" ]; then
+    echo "Updating git repository in $repo_dir..."
+    git -C "$repo_dir" pull
+else
+    echo "Git repository directory not found: $repo_dir"
+    exit 1
+fi
 
 # Check if the service template file exists
 if [ ! -f "$current_dir/$service_template" ]; then
