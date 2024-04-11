@@ -1,6 +1,6 @@
 application:
   envs:
-    staging: 1.0.9
+    staging: 1.0.8
     qa: 1.0.1
     preprod: 1.0.1
     prod: 1.0.1
