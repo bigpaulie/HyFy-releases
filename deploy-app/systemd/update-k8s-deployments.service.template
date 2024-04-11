@@ -10,5 +10,10 @@ ExecStartPre=/usr/bin/git -C /path/to/repo pull
 ExecStart=/path/to/update-k8s-deployments.sh
 WorkingDirectory=/path/to
 
+# Automatically restart the process if it exits
+Restart=always
+# Time to sleep before restarting the service
+RestartSec=10s
+
 [Install]
 WantedBy=multi-user.target
