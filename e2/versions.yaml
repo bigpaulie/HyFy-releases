@@ -1,6 +1,9 @@
 application:
   name: Execution Engine
   versions:
+    3.30.140:
+      summary: Fix anpr_cam, pye2 sync, working hours update
+
     3.30.110:
       summary: Added extension support.
   
