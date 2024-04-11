@@ -68,13 +68,13 @@ const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnv
             backend_image: versions[version].backend?.image || 'N/A',
             frontend_image: versions[version].frontend?.image || 'N/A',
             summary: versions[version].summary || 'No summary available',
-            assigned_to: environmentsForVersions(version, envs) || 'N/A',
+            assigned_to: environmentsForVersions(version, envs) || '',
         }));
     } else {
         return Object.keys(versions).map(version => ({
             version,
             summary: versions[version].summary || 'No summary available',
-            assigned_to: environmentsForVersions(version, envs) || 'N/A',
+            assigned_to: environmentsForVersions(version, envs) || '',
         }));
     }
 };
