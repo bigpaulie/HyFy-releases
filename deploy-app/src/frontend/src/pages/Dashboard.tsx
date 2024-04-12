@@ -68,8 +68,7 @@ const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnv
     if (type === 'k8s') {
         return Object.keys(versions).map(version => ({
             version,
-            backend_image: versions[version].backend?.image || 'N/A',
-            frontend_image: versions[version].frontend?.image || 'N/A',
+            images: `${versions[version].backend?.image || 'N/A'}\n${versions[version].frontend?.image || 'N/A'}`,
             summary: versions[version].summary || 'No summary available',
             assigned_to: environmentsForVersions(version, envs) || '',
         }));
@@ -105,16 +104,24 @@ const Dashboard = () => {
     const { addSnackBar } = useContext(GlobalContext);
 
     const k8sTableColumns = [
-        {label: 'Version', field: 'version'}, 
-        {label: 'Summary', field: 'summary'},
-        {label: 'Backend Image', field: 'backend_image'}, 
-        {label: 'Frontend Image', field: 'frontend_image'},
-        {label: 'Assigned To', field: 'assigned_to'},
+        { label: 'Version', field: 'version' },
+        { label: 'Summary', field: 'summary', style: { minWidth: '40%', maxWidth: '45%' } },  // using percentage
+        { 
+            label: 'Images', 
+            field: 'images', 
+            renderer: (images: string) => (
+                <Typography variant="body2" style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>
+                    {images}
+                </Typography>
+            ),
+            style: { maxWidth: '13em' } // using em for images to ensure enough space
+        },
+        { label: 'Assigned To', field: 'assigned_to' },
     ];
 
     const e2TableColumns = [
         {label: 'Version', field: 'version'}, 
-        {label: 'Summary', field: 'summary'},
+        { label: 'Summary', field: 'summary', style: { minWidth: '30%', maxWidth: '40%' } },  // using percentage
         {label: 'Assigned To', field: 'assigned_to'},
     ];
 
@@ -249,16 +256,6 @@ const Dashboard = () => {
                     ))}
                 </Tabs>
                 <Box sx={{ mt: 2 }}>
-                    {/* <Paper sx={{ p: 2, mb: 3 }}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            Environment Versions
-                        </Typography>
-                        {Object.keys(dashboardState.selectedEnv).map((env, index) => (
-                            <Chip key={index} label={`${env} : ${dashboardState.selectedEnv[env]}`} sx={{ m: 1 }} />
-                        ))}
-                    </Paper>
-                    {renderTabContent(selectedTab)} */}
-
                     {/* Loading indicator */}
                     {loading ? (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">

@@ -1,7 +1,7 @@
 import { TableContainer, Paper, Table, TableHead, TableCell, TableBody, TableRow } from "@mui/material";
 
 interface BasicTableWithActionsProps {
-    columns: any[];
+    columns: { label: string; field: string; renderer?: (value: any) => JSX.Element; style?: React.CSSProperties }[];
     rows: any[];
     keyColumn: string;
     actionColumn?: (row: any) => JSX.Element;
@@ -9,15 +9,13 @@ interface BasicTableWithActionsProps {
 
 const BasicTableWithActions = ({ columns, rows, keyColumn, actionColumn }: BasicTableWithActionsProps) => {
     const getNestedValue = (row: any, field: string) => {
-        // Split the field by dot notation to access nested properties
         const keys = field.split('.');
         let value = row;
         for (let key of keys) {
-            if (value[key]) {
-                value = value[key];
-            } else {
+            if (value[key] === undefined) {
                 return null; // or a default value if necessary
             }
+            value = value[key];
         }
         return value;
     };
@@ -28,7 +26,7 @@ const BasicTableWithActions = ({ columns, rows, keyColumn, actionColumn }: Basic
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
-                            <TableCell key={column.label}>{column.label}</TableCell>
+                            <TableCell key={column.label} style={column.style}>{column.label}</TableCell>
                         ))}
                         {actionColumn && <TableCell>Actions</TableCell>}
                     </TableRow>
@@ -37,7 +35,9 @@ const BasicTableWithActions = ({ columns, rows, keyColumn, actionColumn }: Basic
                     {rows.map((row) => (
                         <TableRow key={row[keyColumn]}>
                             {columns.map((column) => (
-                                <TableCell key={column.field}>{getNestedValue(row, column.field)}</TableCell>
+                                <TableCell key={column.field} style={column.style}>
+                                    {column.renderer ? column.renderer(getNestedValue(row, column.field)) : getNestedValue(row, column.field)}
+                                </TableCell>
                             ))}
                             {actionColumn && (
                                 <TableCell>
