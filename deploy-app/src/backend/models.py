@@ -31,3 +31,5 @@ class TagData(BaseModel):
   tag: str
   directory: str
   environment: str
+  fromVersion: Optional[str] = None
+  toVersion: Optional[str] = None

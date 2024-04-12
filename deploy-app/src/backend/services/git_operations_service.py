@@ -32,7 +32,7 @@ class GitOperationsService:
                 raise ValueError(f"The provided tag does not respect the precedence rule.")
             self.update_configuration_file(tag_data)
             commiting_user = user['name']
-            commit_message = f'chore: configuration updated by {commiting_user} for {tag_data.directory} {tag_data.environment} environment'
+            commit_message = f'chore: {tag_data.fromVersion} to {tag_data.toVersion} {commiting_user} for {tag_data.directory} {tag_data.environment}'
             self.git_service.git_commit(repo_path=self.local_repo_path, message=commit_message)
             self.git_service.git_push(self.local_repo_path)
         except GitOperationException as e:

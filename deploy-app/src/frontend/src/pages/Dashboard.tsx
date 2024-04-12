@@ -11,6 +11,8 @@ interface TagDataDTO {
     tag: string;
     directory: string;
     environment: string;
+    fromVersion?: string;
+    toVersion?: string;
 }
 
 interface K8STableRow {
@@ -185,7 +187,7 @@ const Dashboard = () => {
     };
 
     const k8sActionsColumn = (row: K8STableRow) => {
-        const handleOnSelection = (env: string) => {
+        const handleOnSelection = (env: string, fromVersion: string, toVersion: string) => {
             // Access the directory name from the unified state object
             const directory = dashboardState.config[selectedTab]?.directory_name;
     
@@ -193,6 +195,8 @@ const Dashboard = () => {
                 tag: row.version,
                 directory: directory,
                 environment: env,
+                fromVersion,
+                toVersion
             } as TagDataDTO;
     
             gitService.deployVersion(tagData).then(() => {
@@ -211,7 +215,10 @@ const Dashboard = () => {
             });
         };
     
-        return <DeployButton onSelection={handleOnSelection} />;
+        return <DeployButton 
+            possibleVersion={row.version} 
+            currentVersions={dashboardState.selectedEnv} 
+            onSelection={handleOnSelection} />;
     };
 
     const renderTabContent = (tabIndex: number) => {

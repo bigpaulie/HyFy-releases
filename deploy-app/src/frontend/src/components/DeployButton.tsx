@@ -2,25 +2,51 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import TwoButtonsDialog from './TwoButtonsDialog';
 
 interface DeployButtonProps {
-    onSelection: (selection: string) => void;
+    currentVersions: { [key: string]: string };
+    possibleVersion: string;
+    onSelection: (selection: string, fromVersion: string, toVersion: string) => void;
 }
 
-export default function DeployButton({ onSelection }: DeployButtonProps) {
+export default function DeployButton({ currentVersions, possibleVersion, onSelection }: DeployButtonProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [selectedEnvironment, setSelectedEnvironment] = React.useState<string | null>(null);
+
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  const handleMenuOpenClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+
+  const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  const elementSelected = (selection: string) => {
-    onSelection(selection);
-    handleClose();
+  const elementSelected = (environment: string) => {
+    setSelectedEnvironment(environment);
+    setOpenDialog(true);
   };
+
+  const handleOnDialogConfirm = () => {
+    if (selectedEnvironment) {
+      onSelection(selectedEnvironment, currentVersions[selectedEnvironment] || "N/A", possibleVersion);
+    }
+    setOpenDialog(false);
+    handleMenuClose();
+  };
+
+  const handleOnDialogCancel = () => {
+    setOpenDialog(false);
+    handleMenuClose();
+  };
+
+  // Create a message that dynamically updates based on the selected environment
+  const dialogMessage = selectedEnvironment ? 
+    `Are you sure you want to deploy from version ${currentVersions[selectedEnvironment] || "N/A"} to ${possibleVersion} onto ${selectedEnvironment}?` :
+    "Are you sure?";
 
   return (
     <div>
@@ -29,7 +55,7 @@ export default function DeployButton({ onSelection }: DeployButtonProps) {
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        onClick={handleMenuOpenClick}
         variant='contained'
       >
         Deploy to
@@ -38,7 +64,7 @@ export default function DeployButton({ onSelection }: DeployButtonProps) {
         id="basic-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
+        onClose={handleMenuClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}
@@ -48,6 +74,13 @@ export default function DeployButton({ onSelection }: DeployButtonProps) {
         <MenuItem onClick={() => elementSelected('preprod')}>Pre Prod</MenuItem>
         <MenuItem onClick={() => elementSelected('prod')}>Prod</MenuItem>
       </Menu>
+
+      <TwoButtonsDialog 
+          open={openDialog} 
+          onCancel={handleOnDialogCancel} 
+          onConfirm={handleOnDialogConfirm} 
+          title="Confirm Deployment" 
+          message={dialogMessage} />
     </div>
   );
 }
