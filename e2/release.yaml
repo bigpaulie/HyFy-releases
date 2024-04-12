@@ -1,9 +1,9 @@
 application:
   docker_repo: aixpand/exe_eng
   envs:
-    staging: 3.30.140
-    qa: 3.30.140
-    preprod: 3.30.140
-    prod: 3.30.140
+    staging: 3.30.150
+    qa: 3.30.150
+    preprod: 3.30.150
+    prod: 3.30.150
   git_repo: https://github.com/Lummetry/AiXp-EE.git
   name: Execution Engine
