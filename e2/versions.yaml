@@ -1,6 +1,9 @@
 application:
   name: Execution Engine
   versions:
+    3.30.160:
+      summary: Fix core version
+
     3.30.150:
       summary: Fix anpr_cam
 
