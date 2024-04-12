@@ -1,6 +1,9 @@
 application:
   name: Execution Engine
   versions:
+    3.30.180:
+      summary: Timezone set for Romania
+
     3.30.170:
       summary: Fix anpr_cam
 
