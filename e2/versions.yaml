@@ -1,11 +1,14 @@
 application:
   name: Execution Engine
   versions:
+    3.30.170:
+      summary: Fix anpr_cam
+
     3.30.160:
-      summary: Fix core version
+      summary: broken
 
     3.30.150:
-      summary: Fix anpr_cam
+      summary: broken
 
     3.30.140:
       summary: Fix anpr_cam, pye2 sync, working hours update
