@@ -1,7 +1,7 @@
 application:
   envs:
     staging: 1.0.9
-    qa: 1.0.1
+    qa: 1.0.6
     preprod: 1.0.1
     prod: 1.0.1
   name: Preventics
