@@ -3,6 +3,12 @@ application:
   type: k8s
 
   versions:
+    1.0.10:
+      backend:
+        image: aixpand/backend:release-1.92.14
+      frontend:
+        image: aixpand/investigator:banksight-0.54.1
+      summary: Synthetic data for testing
     1.0.9:
       backend:
         image: aixpand/backend:release-1.92.14
