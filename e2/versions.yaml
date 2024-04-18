@@ -1,6 +1,9 @@
 application:
   name: Execution Engine
   versions:
+    3.30.220: 
+      summary: Faster commands, working hours quick-fix
+  
     3.30.210:  
       summary: Planogram, ONNX, working hours, netmon, IQA updates!
   
