@@ -5,7 +5,7 @@ FROM node:18-alpine as react-build
 WORKDIR /app/frontend
 
 # Copy the frontend directory contents into the container
-COPY frontend/ .
+COPY src/frontend/ .
 
 # Install npm dependencies and build the React app
 RUN npm install
@@ -18,7 +18,7 @@ FROM python:3.10.13-slim
 WORKDIR /app
 
 # Copy the FastAPI application code and the requirements.txt file to the container
-COPY backend/ ./backend
+COPY src/backend/ ./backend
 COPY requirements.txt .
 COPY src/seed.sh ./seed.sh
 
