@@ -24,5 +24,9 @@ application:
     info: prod-secondary-fleet environment
     version:
 
+  - name: prod-trial
+    info: prod-trial environment - env used for live production monitoring
+    version:
+
   git_repo: 
   name: Execution Engine
