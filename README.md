@@ -21,9 +21,11 @@ Each application or component within our ecosystem has its dedicated directory c
 ├── preventics
 │   └── release.yaml
 └── deploy-app
-    └── 
-
 ```
+
+## Deploy app
+This is the front-end / back-end application that will handle users request, make changes to manifests and applyies them
+Please reference the documentation at [README.md](deploy-app/README.MD)
 
 ### `e2/release.yaml` for Edge Devices
 

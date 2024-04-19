@@ -10,10 +10,11 @@
 │   ├── backend/            # Backend application code and resources
 │   ├── frontend/           # Frontend application code and resources
 │   ├── storage/            # Directory for storage related files and scripts
-│   ├── Dockerfile          # Dockerfile for building Docker containers for the project
-│   ├── entrypoint.sh       # Script used as the Docker entrypoint
-│   ├── seed.sh             # Script for seeding the database or other initial setup tasks
-│   └── requirements.txt    # Python pip requirements file
+│   └── seed.sh             # Script for seeding the database or other initial setup tasks
+│
+├──  Dockerfile             # Dockerfile for building Docker containers for the project
+├──  entrypoint.sh          # Script used as the Docker entrypoint
+├──  requirements.txt       # Python pip requirements file
 │
 └── kubernetes/
     ├── install.sh          # Script to install Kubernetes configurations
@@ -63,3 +64,38 @@ SECRET_KEY = os.getenv('SECRET_KEY', None)                            # Secret k
 4. `GIT_COMMITER_NAME`, this is the name associated with the commit in the configuration repository, it can be the same as the `GITHUB_USER`.
 5. `GIT_COMMITER_EMAIL`, this is the email address associated with the github account of the commiter.
 6. `SECRET_KEY`, this is a secret used to sign the JWT token, use an elaborate string, it could be a sha256 hash
+
+### Application overview 
+```
+./
+│
+├── backend /
+│   ├── exceptions/            # Custom exceptions are defined in this directory
+│   ├── routes/                # FastAPI routes are defined in this directory
+│   ├── services/              # Business logic services are defined in this directory
+│   ├── storage_engines/       # Login and interfaces for data persistance is defined in this directory
+│   ├── constants.py           # Application wide constants are defined in this file
+│   ├── main.py                # The main application entry point
+│   ├── models.py              # Models and DTOs are defined in this file
+│   └── seed.py                # Handles user seeding (administrators only!)
+│
+├── frontend/
+│   ├── public                 # Public assests
+│   └── src                    # Application sources
+│       ├── assets/            # Public assets used by the application
+│       ├── components/        # Custom components are defined in this directory
+│       ├── contexts/          # Custom contexts are defined in this directory
+│       ├── hooks/             # Custom hooks are defined in this directory
+│       ├── layouts/           # Application wide layouts will be defined in here
+│       ├── models/            # Models for data transfer are defined in this directory
+│       ├── pages/             # Application pages are defined in this directory
+│       ├── services/          # Business logic services are defined in this directory
+│       ├── App.css            # Application wide custom styles
+│       ├── App.tsx            # Application
+│       ├── Constnats.ts       # Application wide constants are defined in this file
+│       ├── index.css          # Base styles are deined in this file
+│       └── main.tsx           # Main application entry point
+│
+├── storage/
+└── seed.sh
+```
