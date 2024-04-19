@@ -3,23 +3,23 @@ application:
   type: k8s
 
   envs:
-    - name: staging
-      info: staging environment
-      version:
+  - name: staging
+    info: staging environment
+    version:
 
-    - name: qa
-      info: qa environment
-      version:
+  - name: qa
+    info: qa environment
+    version:
 
-    - name: preprod
-      info: preprod environment
-      version:
+  - name: preprod
+    info: preprod environment
+    version:
 
-    - name: prod
-      info: prod environment
-      version:
+  - name: prod
+    info: prod environment
+    version:
 
-    - name: prod-secondary-fleet
-      info: prod-secondary-fleet environment
-      version:
+  - name: prod-secondary-fleet
+    info: prod-secondary-fleet environment
+    version:
 
