@@ -1,5 +1,12 @@
+# this file is used to extract the versions of the application that are to be released
+# the addition of new versions is done only by dev team
+# this versions definition file also defines the target environments for the application
+# as well as the environment precedence
+
 application:
-  name: Execution Engine
+  name: Hyperfy Execution Engine
+  type: edge
+  envs: [staging, qa, preprod, prod]
   versions:
     3.30.220: 
       summary: Faster commands, working hours quick-fix

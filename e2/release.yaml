@@ -7,3 +7,4 @@ application:
     prod: 3.30.190
   git_repo: https://github.com/Lummetry/AiXp-EE.git
   name: Execution Engine
+  type: edge
