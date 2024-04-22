@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is used to seed the database with a user account
+# You can create new admin users by running this script
+
 # ask the user for a username and password combination, store the values in variables and call the backend.seed python script with arguments
 echo "Enter a username: "
 read username
