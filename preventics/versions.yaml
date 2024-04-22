@@ -9,6 +9,12 @@ application:
   envs: [staging, qa, preprod, prod]
 
   versions:
+    1.0.11:
+      backend:
+        image: aixpand/backend:release-1.95.1
+      frontend:
+        image: aixpand/investigator:banksight-0.54.5
+      summary: Synthetic data for testing
     1.0.10:
       backend:
         image: aixpand/backend:release-1.92.14
