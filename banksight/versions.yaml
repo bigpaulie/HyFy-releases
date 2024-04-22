@@ -4,7 +4,7 @@
 # as well as the environment precedence
 
 application:
-  name: Preventics
+  name: Banksight
   type: k8s
   envs: [staging, qa, preprod, prod, prod-fleet-2]
 

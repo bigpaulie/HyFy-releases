@@ -1,0 +1,54 @@
+# this file is used to extract the versions of the application that are to be released
+# the addition of new versions is done only by dev team
+# this versions definition file also defines the target environments for the application
+# as well as the environment precedence
+
+application:
+  name: Hyperfy Execution Engine (BT-100)
+  type: edge
+  envs: [group-1, group-2]
+  versions:
+    3.30.240: 
+      summary: Faster commands, working hours quick-fix
+  
+    3.30.230: 
+      summary: broken
+  
+    3.30.220: 
+      summary: broken
+  
+    3.30.210:  
+      summary: Planogram, ONNX, working hours, netmon, IQA updates!
+  
+    3.30.190:
+      summary: Fix mqtt reconnecting bug
+
+    3.30.180:
+      summary: Timezone set for Romania
+
+    3.30.170:
+      summary: Fix anpr_cam
+
+    3.30.160:
+      summary: broken
+
+    3.30.150:
+      summary: broken
+
+    3.30.140:
+      summary: Fix anpr_cam, pye2 sync, working hours update
+
+    3.30.110:
+      summary: Added extension support.
+  
+    3.30.100:
+      summary: Updated LPR plugins (bug-fixes and car history)
+
+    3.30.70:
+      summary: Current "main" deploy at 2024-04-08
+    
+    3.30.60:
+      summary: Current "main" deploy at 2024-04-01
+    
+    3.30.52:
+      summary: Development version for 2024-03-25

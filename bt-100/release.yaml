@@ -1,0 +1,12 @@
+application:
+  name: Execution Engine
+  type: edge
+
+  envs:
+  - name: group-1
+    info: Group 1
+    version: 3.30.190
+
+  - name: group-2
+    info: Group 2
+    version: 3.30.190

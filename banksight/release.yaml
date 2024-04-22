@@ -5,7 +5,7 @@ application:
     version: 1.0.11
   - info: qa environment
     name: qa
-    version: 1.0.10
+    version: 0.0.0
   - info: preprod environment
     name: preprod
     version: 0.0.0
@@ -15,5 +15,5 @@ application:
   - info: Prod Fleet 2
     name: prod-fleet-2
     version: 0.0.0
-  name: Preventics
+  name: Banksight
   type: k8s
