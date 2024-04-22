@@ -21,7 +21,7 @@ jobs:
       - name: Build, tag and push image
         run: |
           # change to the directory where the Dockerfile is located
-          cd deploy-app/src && \
+          cd deploy-app && \
            docker build -t aixpand/deploy-app:latest . && \
            docker push aixpand/deploy-app:latest
         shell: bash
