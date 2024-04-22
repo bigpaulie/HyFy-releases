@@ -14,6 +14,6 @@ application:
     version: 1.0.11
   - info: Prod Fleet 2
     name: prod-fleet-2
-    version: 1.0.11
+    version: 1.0.10
   name: Preventics
   type: k8s
