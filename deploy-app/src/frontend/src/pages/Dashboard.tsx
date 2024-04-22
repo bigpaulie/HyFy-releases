@@ -49,9 +49,9 @@ interface ConfigApplicationVersionsDto {
     [key: string]: ConfigApplicationVersionDto;
 }
 
-interface ConfigApplicationEnvsDto {
-    [key: string]: string;
-}
+// interface ConfigApplicationEnvsDto {
+//     [key: string]: string;
+// }
 
 interface EnvInfo {
     info: string;
@@ -68,7 +68,26 @@ interface ConfigApplicationDto {
 
 const gitService = new GitService();
 
-const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnvsDto) => {
+// const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnvsDto) => {
+//     const { versions, type } = appData;
+
+//     if (type === 'k8s') {
+//         return Object.keys(versions).map(version => ({
+//             version,
+//             images: `${versions[version].backend?.image || 'N/A'}\n${versions[version].frontend?.image || 'N/A'}`,
+//             summary: versions[version].summary || 'No summary available',
+//             assigned_to: environmentsForVersions(version, envs) || '',
+//         }));
+//     } else {
+//         return Object.keys(versions).map(version => ({
+//             version,
+//             summary: versions[version].summary || 'No summary available',
+//             assigned_to: environmentsForVersions(version, envs) || '',
+//         }));
+//     }
+// };
+
+const getRowsForApp = (appData: ConfigApplicationDto, envs: EnvInfo[]) => {
     const { versions, type } = appData;
 
     if (type === 'k8s') {
@@ -136,7 +155,7 @@ const Dashboard = () => {
         setLoading(true);
         try {
             const configData = await gitService.getConfig(directoryName);
-            const releaseData = await gitService.getReleases(directoryName);
+            // const releaseData = await gitService.getReleases(directoryName);
             const versionData = await gitService.getVersions(directoryName);
             setDashboardState(prevState => ({
                 ...prevState,

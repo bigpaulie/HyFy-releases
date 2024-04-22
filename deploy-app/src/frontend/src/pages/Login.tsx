@@ -40,6 +40,8 @@ const Login = () => {
 
     const userService = new UserService();
     userService.login(username, password).then((token) => {
+      userService.setToken(token.access_token);
+      
       const user = {
         username: username,
         token: token.access_token,
