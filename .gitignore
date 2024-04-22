@@ -161,3 +161,5 @@ cython_debug/
 storage/
 debug.sh
 secrets.yml
+
+.DS_Store

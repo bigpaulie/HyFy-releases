@@ -18,16 +18,16 @@ def mark_tag(tag_data: TagData, current_user: User = Depends(get_current_user)):
         return {"tag": tag_data.tag, "environment": tag_data.environment}
     except GitOperationException as e:
         logger.error(f"Git operation failed: {e}")
-        raise HTTPException(status_code=500, detail="Git operation failed")
+        raise HTTPException(status_code=500, detail=f"Git operation failed {e}")
     except Exception as e:
         logger.error(f"Error updating version: {e}")
-        raise HTTPException(status_code=500, detail="An error occurred while updating the version")
+        raise HTTPException(status_code=500, detail=f"{e}")
 
 @router.get('/config')
 def get_config(current_user: User = Depends(get_current_user)):
     try:
         git_operations_service = GitOperationsService(GITHUB_REPOSITORY_NAME)
-        return git_operations_service.find_release_files()
+        return git_operations_service.find_version_files()
     except Exception as e:
         logger.error(f"Error retrieving configuration: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while retrieving the configuration")
@@ -37,7 +37,7 @@ def refresh_config(current_user: User = Depends(get_current_user)):
     try:
         git_operations_service = GitOperationsService(GITHUB_REPOSITORY_NAME)
         git_operations_service.prepare_repository()
-        return git_operations_service.find_release_files()
+        return git_operations_service.find_version_files()
     except Exception as e:
         logger.error(f"Error refreshing configuration: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while refreshing the configuration")
@@ -50,6 +50,15 @@ def get_config_from_directory(directory: str, current_user: User = Depends(get_c
     except Exception as e:
         logger.error(f"Error retrieving directory configuration: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while retrieving the directory configuration")
+
+@router.get('/config/{directory}/releases')
+def get_releases_from_directory(directory: str, current_user: User = Depends(get_current_user)):
+    try:
+        git_operations_service = GitOperationsService(GITHUB_REPOSITORY_NAME)
+        return git_operations_service.get_release_file_contents(directory)
+    except Exception as e:
+        logger.error(f"Error retrieving releases: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while retrieving the releases")
 
 @router.get('/config/{directory}/versions')
 def get_versions_from_directory(directory: str, current_user: User = Depends(get_current_user)):

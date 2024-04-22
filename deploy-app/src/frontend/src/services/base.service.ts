@@ -5,7 +5,8 @@ export class BaseService {
     protected token: string | null;
 
     constructor() {
-        this.baseUrl = "__REACT_APP_API_URL__";
+        //this.baseUrl = "__REACT_APP_API_URL__";
+        this.baseUrl = "http://localhost:8000/api";
         this.token = localStorage.getItem("token");
 
         axios.interceptors.response.use(

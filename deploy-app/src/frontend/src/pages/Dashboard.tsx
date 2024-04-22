@@ -53,10 +53,16 @@ interface ConfigApplicationEnvsDto {
     [key: string]: string;
 }
 
+interface EnvInfo {
+    info: string;
+    name: string;
+    version: string;
+}
+
 interface ConfigApplicationDto {
     name: string;
     type: string;
-    envs: ConfigApplicationEnvsDto;
+    envs: EnvInfo[];
     versions: ConfigApplicationVersionsDto;
 }
 
@@ -81,10 +87,10 @@ const getRowsForApp = (appData: ConfigApplicationDto, envs: ConfigApplicationEnv
     }
 };
 
-const environmentsForVersions = (version: string, envs: ConfigApplicationEnvsDto): string => {
-    return Object.entries(envs)
-        .filter(([_env, ver]) => ver === version)
-        .map(([env]) => env)
+const environmentsForVersions = (version: string, envs: EnvInfo[]): string => {
+    return envs
+        .filter(env => env.version === version)
+        .map(env => env.name)
         .join(', ');
 };
 
@@ -93,11 +99,11 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
     const [dashboardState, setDashboardState] = useState<{
         config: GetConfigsDto[],
-        selectedEnv: ConfigApplicationEnvsDto,
+        selectedEnv: EnvInfo[],
         tableRows: (K8STableRow[] | E2TableRow[])
     }>({
         config: [],
-        selectedEnv: {},
+        selectedEnv: [],
         tableRows: []
     });
 
@@ -130,6 +136,7 @@ const Dashboard = () => {
         setLoading(true);
         try {
             const configData = await gitService.getConfig(directoryName);
+            const releaseData = await gitService.getReleases(directoryName);
             const versionData = await gitService.getVersions(directoryName);
             setDashboardState(prevState => ({
                 ...prevState,
@@ -267,8 +274,8 @@ const Dashboard = () => {
                                     <Typography variant="h6" component="h2" gutterBottom>
                                         Environment Versions
                                     </Typography>
-                                    {Object.keys(dashboardState.selectedEnv).map((env, index) => (
-                                        <Chip key={index} label={`${env} : ${dashboardState.selectedEnv[env]}`} sx={{ m: 1 }} />
+                                    {dashboardState.selectedEnv.map((env, index) => (
+                                        <Chip key={index} label={`${env.info} (${env.name}): ${env.version}`} sx={{ m: 1 }} />
                                     ))}
                                 </Paper>
                                 {renderTabContent(selectedTab)}
